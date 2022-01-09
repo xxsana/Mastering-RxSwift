@@ -36,4 +36,18 @@ enum MyError: Error {
 let greetings = PublishSubject<String>()
 let languages = PublishSubject<String>()
 
+Observable.combineLatest(greetings, languages) { lhs, rhs -> String in
+    return "\(lhs) \(rhs)"
+}
+    .subscribe { print($0) }
+    .disposed(by: bag)
 
+greetings.onNext("Hi")      //console: nothing
+languages.onNext("World!")   //console: "Hi World!"
+
+
+greetings.onNext("Hello")   //console: "Hello World!"
+languages.onNext("RxSwift") //console: "Hello RxSwift"
+
+greetings.onCompleted()
+languages.onNext("SwiftUI") //console: "Hello SwiftUI" : 가장 마지막 방출 사용
